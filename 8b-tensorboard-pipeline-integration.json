@@ -1,0 +1,226 @@
+{
+  "pipelineSpec": {
+    "components": {
+      "comp-trainer": {
+        "executorLabel": "exec-trainer",
+        "inputDefinitions": {
+          "parameters": {
+            "base_output_directory": {
+              "type": "STRING"
+            },
+            "display_name": {
+              "type": "STRING"
+            },
+            "enable_web_access": {
+              "type": "STRING"
+            },
+            "encryption_spec_key_name": {
+              "type": "STRING"
+            },
+            "labels": {
+              "type": "STRING"
+            },
+            "location": {
+              "type": "STRING"
+            },
+            "network": {
+              "type": "STRING"
+            },
+            "project": {
+              "type": "STRING"
+            },
+            "reserved_ip_ranges": {
+              "type": "STRING"
+            },
+            "restart_job_on_worker_restart": {
+              "type": "STRING"
+            },
+            "service_account": {
+              "type": "STRING"
+            },
+            "tb_log_dir_env_var": {
+              "type": "STRING"
+            },
+            "tensorboard": {
+              "type": "STRING"
+            },
+            "timeout": {
+              "type": "STRING"
+            },
+            "worker_pool_specs": {
+              "type": "STRING"
+            }
+          }
+        },
+        "outputDefinitions": {
+          "parameters": {
+            "gcp_resources": {
+              "type": "STRING"
+            }
+          }
+        }
+      }
+    },
+    "deploymentSpec": {
+      "executors": {
+        "exec-trainer": {
+          "container": {
+            "args": [
+              "--type",
+              "CustomJob",
+              "--payload",
+              "{\"display_name\": \"{{$.inputs.parameters['display_name']}}\", \"job_spec\": {\"worker_pool_specs\": {{$.inputs.parameters['worker_pool_specs']}}, \"scheduling\": {\"timeout\": \"{{$.inputs.parameters['timeout']}}\", \"restart_job_on_worker_restart\": \"{{$.inputs.parameters['restart_job_on_worker_restart']}}\"}, \"service_account\": \"{{$.inputs.parameters['service_account']}}\", \"tensorboard\": \"{{$.inputs.parameters['tensorboard']}}\", \"enable_web_access\": \"{{$.inputs.parameters['enable_web_access']}}\", \"network\": \"{{$.inputs.parameters['network']}}\", \"reserved_ip_ranges\": {{$.inputs.parameters['reserved_ip_ranges']}}, \"base_output_directory\": {\"output_uri_prefix\": \"{{$.inputs.parameters['base_output_directory']}}\"}}, \"labels\": {{$.inputs.parameters['labels']}}, \"encryption_spec\": {\"kms_key_name\":\"{{$.inputs.parameters['encryption_spec_key_name']}}\"}}",
+              "--project",
+              "{{$.inputs.parameters['project']}}",
+              "--location",
+              "{{$.inputs.parameters['location']}}",
+              "--gcp_resources",
+              "{{$.outputs.parameters['gcp_resources'].output_file}}"
+            ],
+            "command": [
+              "python3",
+              "-u",
+              "-m",
+              "google_cloud_pipeline_components.container.v1.custom_job.launcher"
+            ],
+            "image": "gcr.io/ml-pipeline/google-cloud-pipeline-components:1.0.44"
+          }
+        }
+      }
+    },
+    "pipelineInfo": {
+      "name": "8b-tb-pipeline-integration"
+    },
+    "root": {
+      "dag": {
+        "tasks": {
+          "trainer": {
+            "cachingOptions": {
+              "enableCache": true
+            },
+            "componentRef": {
+              "name": "comp-trainer"
+            },
+            "inputs": {
+              "parameters": {
+                "base_output_directory": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "gs://ibnd-argls-ml-demos-storage/08-b_tensorboard_pipelines/pipeline-output/tensorboard-pipeline-integration-ocua1g3o"
+                    }
+                  }
+                },
+                "display_name": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "Trainer"
+                    }
+                  }
+                },
+                "enable_web_access": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "false"
+                    }
+                  }
+                },
+                "encryption_spec_key_name": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": ""
+                    }
+                  }
+                },
+                "labels": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "{}"
+                    }
+                  }
+                },
+                "location": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "us-central1"
+                    }
+                  }
+                },
+                "network": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": ""
+                    }
+                  }
+                },
+                "project": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "ibnd-argls-cstmr-demos"
+                    }
+                  }
+                },
+                "reserved_ip_ranges": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "[]"
+                    }
+                  }
+                },
+                "restart_job_on_worker_restart": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "false"
+                    }
+                  }
+                },
+                "service_account": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "998979163436-compute@developer.gserviceaccount.com"
+                    }
+                  }
+                },
+                "tb_log_dir_env_var": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "AIP_TENSORBOARD_LOG_DIR"
+                    }
+                  }
+                },
+                "tensorboard": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "projects/998979163436/locations/us-central1/tensorboards/23402005485584384"
+                    }
+                  }
+                },
+                "timeout": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "604800s"
+                    }
+                  }
+                },
+                "worker_pool_specs": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "[{\"machine_spec\": {\"machine_type\": \"n1-standard-4\"}, \"replica_count\": 1, \"container_spec\": {\"image_uri\": \"tensorflow/tensorflow:latest\", \"command\": [\"sh\", \"-c\", \"\\nif ! [ -x \\\"$(command -v pip)\\\" ]; then\\n    python3 -m ensurepip || python3 -m ensurepip --user || apt-get install python3-pip\\nfi\\n\\nPIP_DISABLE_PIP_VERSION_CHECK=1 python3 -m pip install --quiet     --no-warn-script-location 'tensorflow_datasets' 'kfp==1.8.22' && \\\"$0\\\" \\\"$@\\\"\\n\", \"sh\", \"-ec\", \"program_path=$(mktemp -d)\\nprintf \\\"%s\\\" \\\"$0\\\" > \\\"$program_path/ephemeral_component.py\\\"\\npython3 -m kfp.v2.components.executor_main                         --component_module_path                         \\\"$program_path/ephemeral_component.py\\\"                         \\\"$@\\\"\\n\", \"\\nimport kfp\\nfrom kfp.v2 import dsl\\nfrom kfp.v2.dsl import *\\nfrom typing import *\\n\\ndef trainer(tb_log_dir_env_var: str = \\\"AIP_TENSORBOARD_LOG_DIR\\\"):\\n    \\\"\\\"\\\"Training component.\\\"\\\"\\\"\\n    import logging\\n    import os\\n\\n    import tensorflow as tf\\n    import tensorflow_datasets as tfds\\n\\n    IMG_WIDTH = 128\\n\\n    def normalize_img(image):\\n        \\\"\\\"\\\"Normalizes image.\\n\\n        * Resizes image to IMG_WIDTH x IMG_WIDTH pixels\\n        * Casts values from `uint8` to `float32`\\n        * Scales values from [0, 255] to [0, 1]\\n\\n        Returns:\\n          A tensor with shape (IMG_WIDTH, IMG_WIDTH, 3). (3 color channels)\\n        \\\"\\\"\\\"\\n        image = tf.image.resize_with_pad(image, IMG_WIDTH, IMG_WIDTH)\\n        return image / 255.0\\n\\n    def normalize_img_and_label(image, label):\\n        \\\"\\\"\\\"Normalizes image and label.\\n\\n        * Performs normalize_img on image\\n        * Passes through label unchanged\\n\\n        Returns:\\n          Tuple (image, label) where\\n          * image is a tensor with shape (IMG_WIDTH, IMG_WIDTH, 3). (3 color\\n            channels)\\n          * label is an unchanged integer [0, 4] representing flower type\\n        \\\"\\\"\\\"\\n        return normalize_img(image), label\\n\\n    if \\\"AIP_MODEL_DIR\\\" not in os.environ:\\n        raise KeyError(\\n            \\\"The `AIP_MODEL_DIR` environment variable has not been\\\"\\n            + \\\"set. See https://cloud.google.com/ai-platform-unified/docs/tutorials/image-recognition-custom/training\\\"\\n        )\\n    output_directory = os.environ[\\\"AIP_MODEL_DIR\\\"]\\n\\n    logging.info(\\\"Loading and preprocessing data ...\\\")\\n    dataset = tfds.load(\\n        \\\"tf_flowers:3.*.*\\\",\\n        split=\\\"train\\\",\\n        try_gcs=True,\\n        shuffle_files=True,\\n        as_supervised=True,\\n    )\\n    dataset = dataset.map(\\n        normalize_img_and_label, num_parallel_calls=tf.data.experimental.AUTOTUNE\\n    )\\n    dataset = dataset.cache()\\n    dataset = dataset.shuffle(1000)\\n    dataset = dataset.batch(128)\\n    dataset = dataset.prefetch(tf.data.experimental.AUTOTUNE)\\n\\n    logging.info(\\\"Creating and training model ...\\\")\\n    model = tf.keras.Sequential(\\n        [\\n            tf.keras.layers.Conv2D(\\n                16,\\n                3,\\n                padding=\\\"same\\\",\\n                activation=\\\"relu\\\",\\n                input_shape=(IMG_WIDTH, IMG_WIDTH, 3),\\n            ),\\n            tf.keras.layers.MaxPooling2D(),\\n            tf.keras.layers.Conv2D(32, 3, padding=\\\"same\\\", activation=\\\"relu\\\"),\\n            tf.keras.layers.MaxPooling2D(),\\n            tf.keras.layers.Conv2D(64, 3, padding=\\\"same\\\", activation=\\\"relu\\\"),\\n            tf.keras.layers.MaxPooling2D(),\\n            tf.keras.layers.Flatten(),\\n            tf.keras.layers.Dense(512, activation=\\\"relu\\\"),\\n            tf.keras.layers.Dense(5),  # 5 classes\\n        ]\\n    )\\n    model.compile(\\n        optimizer=\\\"adam\\\",\\n        loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),\\n        metrics=[\\\"accuracy\\\"],\\n    )\\n\\n    # Create a TensorBoard call back and write to the gcs path provided by AIP_TENSORBOARD_LOG_DIR\\n    tensorboard_callback = tf.keras.callbacks.TensorBoard(\\n        log_dir=os.environ[tb_log_dir_env_var], histogram_freq=1\\n    )\\n\\n    # Train the model with tensorboard_callback\\n    model.fit(dataset, epochs=14, callbacks=[tensorboard_callback])\\n\\n    logging.info(f\\\"Exporting SavedModel to: {output_directory}\\\")\\n    # Add softmax layer for intepretability\\n    probability_model = tf.keras.Sequential([model, tf.keras.layers.Softmax()])\\n    probability_model.save(output_directory)\\n\\n\"], \"args\": [\"--executor_input\", \"{{$.json_escape[1]}}\", \"--function_to_execute\", \"trainer\"]}, \"disk_spec\": {\"boot_disk_type\": \"pd-ssd\", \"boot_disk_size_gb\": 100}}]"
+                    }
+                  }
+                }
+              }
+            },
+            "taskInfo": {
+              "name": "trainer"
+            }
+          }
+        }
+      }
+    },
+    "schemaVersion": "2.0.0",
+    "sdkVersion": "kfp-1.8.22"
+  },
+  "runtimeConfig": {
+    "gcsOutputDirectory": "gs://ibnd-argls-ml-demos-storage/08-b_tensorboard_pipelines/tensorboard-pipeline-integration/pipeline_root/"
+  }
+}
